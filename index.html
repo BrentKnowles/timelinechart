@@ -7,13 +7,70 @@
 <script>
  google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
+	
+   ///
+	//https://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript
+	///	
+	   loadJSON(function(response) {
+  // Parse JSON string into object
+    var actual_JSON = JSON.parse(response);
+	return actual_JSON;
+ });
+	  
+	   ///
+	//https://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript
+	///
+	  function loadJSON(callback) {   
 
+    var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+    xobj.open('GET', 'data://habitica-user-data.json', true); // Replace 'my_data' with the path to your file
+    xobj.onreadystatechange = function () {
+          if (xobj.readyState == 4 && xobj.status == "200") {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            callback(xobj.responseText);
+          }
+    };
+    xobj.send(null);  
+ }
+	  
+	
+	  
+	///
+	//
+	///
+	  function getjsonGraph()
+	  {
+	  var graph = {
+			"_id": "4d2f45a9-dc5e-4e77-9c8c-de1469282522",
+			"_ABTests": {
+			"onboardingPushNotification": "Onboarding-Step5-Phasea-VersionD"
+			},
+			"migration": "20170928_redesign_launch.js"
+    }
+	return graph;
+	  }
+	  reading: https://developer.chrome.com/extensions/xhr
+	  
+	  ///
+	  //
+	  ///
+	  function loadData()
+	  {
+	  
+	 // var graph = getjsonGraph();
+	 var graph = loadJSON();
+	  console.log(graph);
+	   var dt = new google.visualization.DataTable();
+        dt.addColumn('date', 'Time of Day');
+        dt.addColumn('number', 'Rating');
+        dt.addColumn('number', 'Rating2');
+		 
+		return dt;
+	  }
       function drawChart() {
 
-        var data = new google.visualization.DataTable();
-        data.addColumn('date', 'Time of Day');
-        data.addColumn('number', 'Rating');
-         data.addColumn('number', 'Rating2');
+        var data = loadData();
 
         data.addRows([
           [new Date(2015, 0, 1), 5,1],  [new Date(2015, 0, 2), 7,1],  [new Date(2015, 0, 3), 3,1],
