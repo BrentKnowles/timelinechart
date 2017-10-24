@@ -60,21 +60,52 @@
 	 // fetchJSON();
 	 // var graph = getjsonGraph();
 	 var graph = actual_JSON;
-	  console.log(graph); // this will fail without synchronous load
+	  //console.log(graph); // this will fail without synchronous load
 	  
 
 	  
 	   var dt = new google.visualization.DataTable(graph);
         dt.addColumn('date', 'date');
-        dt.addColumn('number', 'replacewithactualhabit');
 		
-	for ( var i = 0; i < graph.history.length; i++) {
-		var obj = graph.history[i];
-		console.log(obj);
-		dt.addRows([
-		[new Date(obj["date"]), obj["value"]]
-		]);
-}	
+		var numberofcolumns= graph.habits.length;
+		// create columns
+		for (var z = 0; z < numberofcolumns; z++)
+		{
+			dt.addColumn('number', graph.habits[z].text);
+		}
+        
+		
+		
+		
+	//for ( var i = 0; i < graph.history.length; i++)
+	{
+		for (var j = 0; j < graph.habits.length; j++)
+		{
+			//dt.addColumn('number', graph.habits[j].text);
+			var history = graph.habits[j].history;
+			for (var k = 0; k < history.length; k++)
+			{
+				var obj = history[k];
+				//console.log(obj);
+				
+				var row_arr = new Array(numberofcolumns+1);
+				//console.log(numberofcolumns);
+				for (y = 0; y < row_arr.length; y++)
+				{
+					// null new row
+					row_arr[y]=0;
+				}
+				row_arr[0] = new Date(obj["date"]);
+				
+				//write column
+				row_arr[j+1] = obj["value"];
+				console.log(row_arr);
+				dt.addRows([row_arr]);	
+			}
+			
+			
+		}	
+	}
 		//TO DO
 		// need to iterate on test.json
 		
@@ -111,19 +142,19 @@
 
         var options = {
           title: 'Rate',
-          width: 900,
-          height: 500,
+          width: 1200,
+          height: 800,
           hAxis: {
             format: 'M/d/yy',
-            gridlines: {count: 15}
+            gridlines: {count: 10}
           },
           vAxis: {
-            gridlines: {color: 'none'},
+            gridlines: {count:5, color: 'none'},
             minValue: 0
           }
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
 
         chart.draw(data, options);
 
