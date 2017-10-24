@@ -66,14 +66,19 @@
 	  
 	   var dt = new google.visualization.DataTable(graph);
         dt.addColumn('date', 'date');
-        dt.addColumn('number', 'value');
+        dt.addColumn('number', 'replacewithactualhabit');
 		
+	for ( var i = 0; i < graph.history.length; i++) {
+		var obj = graph.history[i];
+		console.log(obj);
+		dt.addRows([
+		[new Date(obj["date"]), obj["value"]]
+		]);
+}	
 		//TO DO
 		// need to iterate on test.json
 		
-		dt.addRows([
-		[new Date(2015, 0, 1), 5]
-		]);
+		
         //dt.addColumn('number', 'Rating2');
 		 
 		return dt;
@@ -105,7 +110,7 @@
 		  -->
 
         var options = {
-          title: 'Rate the Day on a Scale of 1 to 10',
+          title: 'Rate',
           width: 900,
           height: 500,
           hAxis: {
