@@ -1,3 +1,9 @@
+//  google.charts.load('current', {'packages':['barchart']});
+//google.charts.load('current', {'packages':['corechart']});
+// Load the Visualization API and the controls package.
+google.charts.load('current', { 'packages': ['corechart', 'controls'] });
+google.charts.setOnLoadCallback(drawChart);
+
 ///
 //https://codepen.io/KryptoniteDove/post/load-json-file-locally-using-pure-javascript
 ///
@@ -99,11 +105,7 @@ function loadData() {
     return dt;
 }
 
-//  google.charts.load('current', {'packages':['barchart']});
-//google.charts.load('current', {'packages':['corechart']});
-// Load the Visualization API and the controls package.
-google.charts.load('current', { 'packages': ['corechart', 'controls'] });
-google.charts.setOnLoadCallback(drawChart);
+
 
 
 function drawChart() {
@@ -115,25 +117,7 @@ function drawChart() {
 
 
 
-    var options = {
-        title: 'Rate',
-        width: "100%",
-        height: 400,
-        bar:
-        {
-            groupWidth: "90%"
-        },
-        legend: { position: "bottom" },
-        /*   hAxis: {
-            format: 'M/d/yy',
-             gridlines: {count: 10}
-           },
-           vAxis: {
-             gridlines: {count:5, color: 'none'},
-             minValue: 0
-           }*/
-    };
-
+   
 
     var view = new google.visualization.DataView(data);
     /* view.setColumns([0, 1,
@@ -167,12 +151,25 @@ function drawChart() {
             //  }
         }
     });
-    console.log("here");
+   
 
 
     var chartwrapper = new google.visualization.ChartWrapper({
         'chartType': 'ColumnChart',
         'containerId': 'chart_div',
+        
+        'options':{
+            'height':'500',
+            'width':'1400',
+            'hAxis':{
+                'title':'boo',
+                'gridlines':'10',
+                'width':'800',
+            },
+            'bar':{
+                'groupWidth': '90%'
+            }
+        },
     }
     );
 
