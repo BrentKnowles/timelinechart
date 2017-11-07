@@ -1,7 +1,7 @@
 //  google.charts.load('current', {'packages':['barchart']});
 //google.charts.load('current', {'packages':['corechart']});
 // Load the Visualization API and the controls package.
-google.charts.load('current', { 'packages': ['corechart', 'controls'] });
+google.charts.load('current', { 'packages': ['corechart', 'controls','bar'] });
 google.charts.setOnLoadCallback(drawChart);
 
 ///
@@ -53,22 +53,25 @@ function loadData() {
 
 
 
-    var dt = new google.visualization.DataTable(graph);
-    dt.addColumn('date', 'date');
+    //var dt = new google.visualization.DataTable(graph);
+   //### dt.addColumn('date', 'date');
+   
 
     var numberofcolumns = graph.habits.length;
 
 
-    numberofcolumns = 2;
+    numberofcolumns = 3; //#### just temp for test
 
     // create columns
     for (var z = 0; z < numberofcolumns; z++) {
-        dt.addColumn('number', graph.habits[z].text);
+     // ####   dt.addColumn('number', graph.habits[z].text);
     }
 
-
-
-
+   // ## Definitely the DATA I'm adding messing things up
+if (1)
+{
+    var listofrows = [];
+    listofrows.push(['date', 'Sales', 'Expenses', 'Profit']);
     //for ( var i = 0; i < graph.history.length; i++)
     {
         for (var j = 0; j < graph.habits.length; j++) {
@@ -78,24 +81,47 @@ function loadData() {
                 var obj = history[k];
                 //console.log(obj);
 
-                var row_arr = new Array(numberofcolumns + 1);
+                var row_arr = [];// #new Array(numberofcolumns + 1);
                 //console.log(numberofcolumns);
-                for (y = 0; y < row_arr.length; y++) {
+                for (y = 0; y < numberofcolumns+1; y++) {
                     // null new row
                     row_arr[y] = 0;
                 }
-                row_arr[0] = new Date(obj["date"]);
+                // 11/7/2017 trying to strip time to get the thick bars?
+                row_arr[0] = new Date(new Date(obj["date"]).toDateString());
 
                 //write column if a valid column based on filters
                 if (j < numberofcolumns)
-                    row_arr[j + 1] = obj["value"];
-                console.log(row_arr);
-                dt.addRows([row_arr]);
+                    row_arr[j + 1] = parseInt(obj["value"]); //****
+                //console.log(row_arr);
+              
+                //listofrows.push(row_arr);
             }
-
-
+           
+           
         }
     }
+  /*  var dt = google.visualization.arrayToDataTable([
+        ['date', 'Sales', 'Expenses', 'Profit'],
+        [new Date('10/10/2017'), 1, 4, 2]
+    ]);
+   */
+
+/* The solution will need to be 11/7/2017:
+
+ ( 1 - I need to have onlyone ROW for each date. Period!)
+
+   // theory - is it because DATE is NOT unique? because when this single data point is outside all is good
+  listofrows.push([new Date('10/10/2017'), 1, 4, 2]);
+  listofrows.push([new Date('10/11/2017'), 2, 5, 3]); // and if I add a second, we are pooched
+    var dt = google.visualization.arrayToDataTable(listofrows);
+    
+    //dt.addRows(listofrows);
+}
+    console.log ("BOO==>" + dt.getValue(0,0));
+    console.log ("BOO==>" + dt.getValue(0,1));
+    console.log ("BOO==>" + dt.getValue(0,2));
+  //  console.log ("BOO==>" + dt.getValue(0,3));
     //TO DO
     // need to iterate on test.json
 
@@ -110,7 +136,7 @@ function loadData() {
 
 function drawChart() {
 
-    var data = loadData();
+    var data = loadData();  
 
     // Need to figure out how to parse the json file to grab the row data
 
@@ -119,26 +145,18 @@ function drawChart() {
 
    
 
-    var view = new google.visualization.DataView(data);
-    /* view.setColumns([0, 1,
-                         { calc: "stringify",
-                           sourceColumn: 1,
-                           type: "string",
-                           role: "annotation" },
-                         2]);
-      */
+    //var view = new google.visualization.DataView(data);
     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-    // chart.draw(view,(options));
 
     var button = document.getElementById('change');
 
 
 
-    console.log("here1");
+    
 
     // Create a dashboard.
     var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
-    console.log("here");
+    
     var datePicker = new google.visualization.ControlWrapper({
 
         'controlType': 'DateRangeFilter',
@@ -155,23 +173,50 @@ function drawChart() {
 
 
     var chartwrapper = new google.visualization.ChartWrapper({
-        'chartType': 'ColumnChart',
+        'chartType': 'BarChart',
         'containerId': 'chart_div',
         
         'options':{
             'height':'500',
             'width':'1400',
+            
             'hAxis':{
                 'title':'boo',
-                'gridlines':'10',
+                
                 'width':'800',
+            }
+            /*,
+            'series' : {
+                '0': {'axis': 'Jump rope'}, 
+                '1': {'axis': 'Kindness/Growl'}
             },
+            'axes' :{
+                'y':{
+                    'Jump Rope' : {'label': 'xxxx'},
+                    'Kindness/Growl' :{'label' : 'yyyy'}
+                }
+            }
+            */
+            ,           
             'bar':{
-                'groupWidth': '90%'
+                'groupWidth': "90%",
             }
         },
     }
     );
+
+    // this works with thick graphs
+     data2 = google.visualization.arrayToDataTable([
+        ['date', 'Sales', 'Expenses', 'Profit'],
+        [new Date('1/1/2014'), 1000, 400, 200],
+        [new Date('1/2/2014'), 1170, 460, 250],
+        [new Date('1/3/2014'), 660, 0, 300],
+        [new Date('1/4/2014'), 1030, 540, 350]
+      ]);
+      console.log ("BOO==>" + data2.getValue(0,0));
+      console.log ("BOO==>" + data2.getValue(0,1));
+
+     // data = data2; //  # Data2 gives me thick bars
 
     // binding
     dashboard.bind(datePicker, chartwrapper);
