@@ -54,24 +54,28 @@ function loadData() {
 
 
     //var dt = new google.visualization.DataTable(graph);
-   //### dt.addColumn('date', 'date');
-   
+  
 
     var numberofcolumns = graph.habits.length;
 
 
-    numberofcolumns = 3; //#### just temp for test
+    numberofcolumns = 6; //#### just temp for test
 
+    var columntitle = [];
+     //### dt.addColumn('date', 'date');
+     columntitle.push({label:'date', type:'date'});
     // create columns
     for (var z = 0; z < numberofcolumns; z++) {
      // ####   dt.addColumn('number', graph.habits[z].text);
+     columntitle.push({label:graph.habits[z].text, type:'number'});
     }
-
+    var listofrows = [];
+    
+listofrows.push(columntitle);
    // ## Definitely the DATA I'm adding messing things up
 if (1)
 {
-    var listofrows = [];
-    listofrows.push(['date', 'Sales', 'Expenses', 'Profit']);
+   // listofrows.push([{label:'date', type:'date'}, {label:'Sales',type:'number'}, {label:'Expenses',type:'number'}, {label:'Profit',type:'number'}]);
     //for ( var i = 0; i < graph.history.length; i++)
     {
         for (var j = 0; j < graph.habits.length; j++) {
@@ -81,21 +85,44 @@ if (1)
                 var obj = history[k];
                 //console.log(obj);
 
-                var row_arr = [];// #new Array(numberofcolumns + 1);
-                //console.log(numberofcolumns);
-                for (y = 0; y < numberofcolumns+1; y++) {
-                    // null new row
-                    row_arr[y] = 0;
-                }
-                // 11/7/2017 trying to strip time to get the thick bars?
-                row_arr[0] = new Date(new Date(obj["date"]).toDateString());
+                var modified_date = new Date(new Date(obj["date"]).toDateString());
+                console.log(modified_date);
+                var foundOne = false;
+// 11/10/2017 -- Need to find out if a row exists already
+// matching on date
+                for (var zzz = 0 ; zzz < listofrows.length; zzz++)
+                {
 
-                //write column if a valid column based on filters
-                if (j < numberofcolumns)
-                    row_arr[j + 1] = parseInt(obj["value"]); //****
-                //console.log(row_arr);
-              
-                //listofrows.push(row_arr);
+                    // skip column row
+                    if (zzz > 0)
+                    if (listofrows[zzz][0].getTime() === modified_date.getTime()){
+                        // add to this row instead
+                        // for now I'm just Excluding it
+                        // TODO
+                        console.log("found one, skiping");
+                        foundOne= true;
+                        listofrows[zzz][0][j+1] = parseInt(obj["value"]);
+                    }
+                }
+                if (foundOne == false)
+                {
+                    console.log("row with date is unisque" + modified_date);
+                    var row_arr = [];// #new Array(numberofcolumns + 1);
+                    //console.log(numberofcolumns);
+                    for (y = 0; y < numberofcolumns+1; y++) {
+                        // null new row
+                        row_arr[y] = 0;
+                    }
+                    // 11/7/2017 trying to strip time to get the thick bars?
+                    row_arr[0] = modified_date;
+
+                    //write column if a valid column based on filters
+                    if (j < numberofcolumns)
+                        row_arr[j + 1] = parseInt(obj["value"]); //****
+                    //console.log(row_arr);
+                
+                    listofrows.push(row_arr);
+                }
             }
            
            
@@ -104,9 +131,12 @@ if (1)
   /*  var dt = google.visualization.arrayToDataTable([
         ['date', 'Sales', 'Expenses', 'Profit'],
         [new Date('10/10/2017'), 1, 4, 2]
-    ]);
-   */
-
+    ]);*/
+    //listofrows.push([new Date('10/11/2017'), 22, 14, 12]);
+    //listofrows.push([new Date('10/12/2017'), 2, 4, 2]);
+    console.log(listofrows);
+    var dt = google.visualization.arrayToDataTable(listofrows);
+   // listofrows.push([new Date('10/11/2017'), 22, 14, 12]);
 /* The solution will need to be 11/7/2017:
 
  ( 1 - I need to have onlyone ROW for each date. Period!)
@@ -115,12 +145,12 @@ if (1)
   listofrows.push([new Date('10/10/2017'), 1, 4, 2]);
   listofrows.push([new Date('10/11/2017'), 2, 5, 3]); // and if I add a second, we are pooched
     var dt = google.visualization.arrayToDataTable(listofrows);
-    
-    //dt.addRows(listofrows);
+*/  
+   // dt.addRows(listofrows);
 }
-    console.log ("BOO==>" + dt.getValue(0,0));
-    console.log ("BOO==>" + dt.getValue(0,1));
-    console.log ("BOO==>" + dt.getValue(0,2));
+   // console.log ("BOO==>" + dt.getValue(0,0));
+   // console.log ("BOO==>" + dt.getValue(0,1));
+   // console.log ("BOO==>" + dt.getValue(0,2));
   //  console.log ("BOO==>" + dt.getValue(0,3));
     //TO DO
     // need to iterate on test.json
@@ -177,7 +207,7 @@ function drawChart() {
         'containerId': 'chart_div',
         
         'options':{
-            'height':'500',
+            'height':'800',
             'width':'1400',
             
             'hAxis':{
