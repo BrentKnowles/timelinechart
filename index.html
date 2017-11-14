@@ -1,6 +1,33 @@
 <!DOCTYPE html>
 
 <head>
+  <style>
+  .column {
+    float: left;
+    width: 50%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.left {
+    width: 20%;
+}
+
+.right {
+    width: 80%;
+}
+
+ /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+ @media (max-width: 600px) {
+    .column {
+        width: 100%;
+    }
+} 
+  </style>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="tablebuilder.js"></script>
 
@@ -19,11 +46,27 @@
 <body>
   <button id="change">Click to change the format. Narrow date range to see THICK bars</button>
   DD
-  <div id="dashboard_div">
+  
     EE
-    <!--Divs that will hold each control and chart-->
-    <div id="filter_div"></div>
-    <div id="chart_div"></div>
-</body>
+    
+    
+    
+
+    <div class="row">
+      <div class="column left">
+        <!--Divs that will hold each control and chart-->
+        <div id="dashboard_div"></div>
+        <div id="filter_div"></div>
+        <div id="colFilter_div"></div>
+
+      </div>
+      
+      <div class="column right">
+          <div id="chart_div"></div>
+
+      </div>
+    </div> 
+
+  </body>
 
 </html>
