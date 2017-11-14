@@ -12,7 +12,7 @@ function loadJSON2(callback) {
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     // xobj.open('GET', 'habitica-user-data.json', false); // Replace 'my_data' with the path to your file
-    xobj.open('GET', 'test.json', false); // Replace 'my_data' with the path to your file
+    xobj.open('GET', 'habitica-user-data.json', false); // Replace 'my_data' with the path to your file
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4 && xobj.status == "200") {
             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
@@ -48,7 +48,8 @@ function loadData() {
 
     // fetchJSON();
     // var graph = getjsonGraph();
-    var graph = actual_JSON;
+    var parentgraph = actual_JSON;
+    var graph = parentgraph.tasks;
     //console.log(graph); // this will fail without synchronous load
 
 
@@ -59,7 +60,7 @@ function loadData() {
     var numberofcolumns = graph.habits.length;
 
 
-    numberofcolumns = 6; //#### just temp for test
+    //numberofcolumns = 6; //#### just temp for test
 
     var columntitle = [];
      //### dt.addColumn('date', 'date');
@@ -207,8 +208,8 @@ function drawChart() {
         'containerId': 'chart_div',
         
         'options':{
-            'height':'800',
-            'width':'1400',
+            'height': "1000",
+            'width':  "100%",
             
             'hAxis':{
                 'title':'boo',
@@ -236,7 +237,7 @@ function drawChart() {
     );
 
     // this works with thick graphs
-     data2 = google.visualization.arrayToDataTable([
+    /* data2 = google.visualization.arrayToDataTable([
         ['date', 'Sales', 'Expenses', 'Profit'],
         [new Date('1/1/2014'), 1000, 400, 200],
         [new Date('1/2/2014'), 1170, 460, 250],
@@ -244,7 +245,7 @@ function drawChart() {
         [new Date('1/4/2014'), 1030, 540, 350]
       ]);
       console.log ("BOO==>" + data2.getValue(0,0));
-      console.log ("BOO==>" + data2.getValue(0,1));
+      console.log ("BOO==>" + data2.getValue(0,1));*/
 
      // data = data2; //  # Data2 gives me thick bars
 
@@ -252,8 +253,60 @@ function drawChart() {
     dashboard.bind(datePicker, chartwrapper);
     console.log("here");
     //		chart.draw(data, options);
-    dashboard.draw(data);
+    
 
+
+    var columnsTable = new google.visualization.DataTable();
+    columnsTable.addColumn('number', 'colIndex');
+    columnsTable.addColumn('string', 'colLabel');
+    var initState= {selectedValues: []};
+    // put the columns into this data table (skip column 0)
+    for (var i = 1; i < data.getNumberOfColumns(); i++) {
+        columnsTable.addRow([i, data.getColumnLabel(i)]);
+        // you can comment out this next line if you want to have a default selection other than the whole list
+        initState.selectedValues.push(data.getColumnLabel(i));
+    }
+    var columnFilter = new google.visualization.ControlWrapper({
+        controlType: 'CategoryFilter',
+        containerId: 'colFilter_div',
+        dataTable: columnsTable,
+        options: {
+            filterColumnLabel: 'colLabel',
+            ui: {
+                label: 'Columns',
+                allowTyping: false,
+                allowMultiple: true,
+                allowNone: false,
+                selectedValuesLayout: 'belowStacked'
+            }
+        },
+        state: initState
+    });
+    function setChartView () {
+        var state = columnFilter.getState();
+        var row;
+        var view = {
+            columns: [0]
+        };
+        for (var i = 0; i < state.selectedValues.length; i++) {
+            row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
+            view.columns.push(columnsTable.getValue(row, 0));
+        }
+        // sort the indices into their original order
+        view.columns.sort(function (a, b) {
+            return (a - b);
+        });
+        chartwrapper.setView(view);
+        //chart.setView(view);
+        //chart.draw();
+        dashboard.draw(data);
+    }
+
+    google.visualization.events.addListener(columnFilter, 'statechange', setChartView);
+    
+    setChartView();
+    columnFilter.draw();
+   
     ////
     button.onclick = function () {
 
